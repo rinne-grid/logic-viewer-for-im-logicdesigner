@@ -1,9 +1,9 @@
 'use strict';
 
-import { app, protocol, BrowserWindow, ipcMain } from 'electron';
+import {app, protocol, BrowserWindow, ipcMain, ipcRenderer, dialog, Menu} from 'electron';
 import {
   createProtocol,
-  installVueDevtools
+  installVueDevtools,
 } from 'vue-cli-plugin-electron-builder/lib';
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -19,6 +19,26 @@ function createWindow() {
   win = new BrowserWindow({ width: 800, height: 600, webPreferences: {
     nodeIntegration: true,
   } });
+
+
+  const template = [
+    {
+      label: 'File',
+      submenu: [
+        {
+          label: 'Open',
+          accelerator: 'CmdOrCtrl+O',
+          click: () => {
+            dialog.showOpenDialog({properties: ['openFile']}, (filePath: string) => {
+              win!.webContents.send('open_file', filePath);
+            });
+          },
+        },
+      ],
+    },
+  ];
+  const menu = Menu.buildFromTemplate(template);
+  Menu.setApplicationMenu(menu);
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
@@ -80,7 +100,7 @@ app.on('ready', async () => {
 // Exit cleanly on request from parent process in development mode.
 if (isDevelopment) {
   if (process.platform === 'win32') {
-    process.on('message', data => {
+    process.on('message', (data) => {
       if (data === 'graceful-exit') {
         app.quit();
       }
@@ -93,6 +113,10 @@ if (isDevelopment) {
 }
 
 // 20191003追加
-ipcMain.on("ondragstart", (event, msg) => {
+ipcMain.on('ondragstart', (event, msg) => {
     console.log(msg);
 });
+
+
+
+
