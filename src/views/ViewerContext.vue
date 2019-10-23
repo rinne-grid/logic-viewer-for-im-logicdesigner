@@ -1,7 +1,6 @@
 <template>
     <div id="area">
-        <p>aaa</p>
-        <input type="file" value="選択">
+
     </div>
 </template>
 
