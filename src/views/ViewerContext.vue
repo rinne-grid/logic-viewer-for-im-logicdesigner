@@ -16,7 +16,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import ViewerPane  from '@/components/ViewerPane.vue';
+import ViewerPane from '@/components/ViewerPane.vue';
 
 @Component({
     components: {

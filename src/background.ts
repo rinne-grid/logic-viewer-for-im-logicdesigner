@@ -124,24 +124,35 @@ ipcMain.on('load_and_unzip', (event, path) => {
     if (!fs.existsSync('./tmp')) {
         fs.mkdirSync('./tmp');
     }
+    let targetPath = '';
     fs.createReadStream(path)
         .pipe(unzipper.Parse())
-        .on('entry', entry => {
+        .on('entry', (entry) => {
             const fileName = entry.path;
             console.log(fileName);
-            if(fileName === "user_definition.json") {
-                entry.pipe(fs.createWriteStream(`./tmp/${fileName}`))
+            if( fileName === 'user_definition.json') {
+                entry.pipe(fs.createWriteStream(`./tmp/${fileName}`));
+                console.log(entry.path);
+                targetPath = `./tmp/${fileName}`;
             } else {
                 entry.autodrain();
             }
         })
         .on('finish', () => {
-            console.log("finish");
+            console.log('finish');
         })
         .promise()
         .then(() => {
-            console.log("done");
-            event.sender.send('load_and_unzip_complete', 'ok');
+            console.log('done');
+            event.sender.send('load_and_unzip_complete', targetPath);
         });
 });
 
+ipcMain.on('load_json', (event, path) => {
+    fs.readFile(path, 'utf-8', (err, data) => {
+        const jsonStr = data;
+        const jsonObj = JSON.parse(data);
+        console.log(jsonObj);
+        event.sender.send('load_json_complete', jsonObj);
+    });
+});
