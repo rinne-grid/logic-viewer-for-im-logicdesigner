@@ -5,6 +5,8 @@ import {
   createProtocol,
   installVueDevtools,
 } from 'vue-cli-plugin-electron-builder/lib';
+import * as unzipper from 'unzipper';
+import * as fs from 'fs';
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -118,5 +120,28 @@ ipcMain.on('ondragstart', (event, msg) => {
 });
 
 
-
+ipcMain.on('load_and_unzip', (event, path) => {
+    if (!fs.existsSync('./tmp')) {
+        fs.mkdirSync('./tmp');
+    }
+    fs.createReadStream(path)
+        .pipe(unzipper.Parse())
+        .on('entry', entry => {
+            const fileName = entry.path;
+            console.log(fileName);
+            if(fileName === "user_definition.json") {
+                entry.pipe(fs.createWriteStream(`./tmp/${fileName}`))
+            } else {
+                entry.autodrain();
+            }
+        })
+        .on('finish', () => {
+            console.log("finish");
+        })
+        .promise()
+        .then(() => {
+            console.log("done");
+            event.sender.send('load_and_unzip_complete', 'ok');
+        });
+});
 

@@ -13,8 +13,10 @@
   },
   "main": "background.js",
   "dependencies": {
+    "@types/unzip": "^0.1.1",
+    "@types/unzipper": "^0.10.1",
     "photon": "github:connors/photon",
-    "unzip": "^0.1.11",
+    "unzipper": "^0.10.5",
     "vue": "^2.6.10",
     "vue-class-component": "^7.0.2",
     "vue-property-decorator": "^8.1.0",
