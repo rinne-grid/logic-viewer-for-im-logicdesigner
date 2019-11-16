@@ -7,6 +7,8 @@ import {
 } from 'vue-cli-plugin-electron-builder/lib';
 import * as unzipper from 'unzipper';
 import * as fs from 'fs';
+import * as os from 'os';
+import * as path from 'path';
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -49,6 +51,11 @@ function createWindow() {
 
     if (!process.env.IS_TEST) {
         win.webContents.openDevTools();
+
+
+        BrowserWindow.addDevToolsExtension(
+            path.join(os.homedir(), 'AppData/Local/Google/Chrome/User Data/Default/Extensions/nhdogjmejiglipccpnnnanhbledajbpd/5.3.2_0'),
+        );
     }
   } else {
     createProtocol('app');
@@ -120,17 +127,17 @@ ipcMain.on('ondragstart', (event, msg) => {
 });
 
 
-ipcMain.on('load_and_unzip', (event, path) => {
+ipcMain.on('load_and_unzip', (event, filePath) => {
     if (!fs.existsSync('./tmp')) {
         fs.mkdirSync('./tmp');
     }
     let targetPath = '';
-    fs.createReadStream(path)
+    fs.createReadStream(filePath)
         .pipe(unzipper.Parse())
         .on('entry', (entry) => {
             const fileName = entry.path;
             console.log(fileName);
-            if( fileName === 'user_definition.json') {
+            if ( fileName === 'user_definition.json') {
                 entry.pipe(fs.createWriteStream(`./tmp/${fileName}`));
                 console.log(entry.path);
                 targetPath = `./tmp/${fileName}`;
@@ -148,8 +155,8 @@ ipcMain.on('load_and_unzip', (event, path) => {
         });
 });
 
-ipcMain.on('load_json', (event, path) => {
-    fs.readFile(path, 'utf-8', (err, data) => {
+ipcMain.on('load_json', (event, filePath) => {
+    fs.readFile(filePath, 'utf-8', (err, data) => {
         const jsonStr = data;
         const jsonObj = JSON.parse(data);
         console.log(jsonObj);

@@ -17,6 +17,7 @@
 import { Vue, Component } from 'vue-property-decorator';
 import * as fs from 'fs';
 import { ipcRenderer } from 'electron';
+import UserDefinition from '@/interfaces/UserDefinition';
 
 @Component
 export default class ViewerPane extends Vue {
@@ -38,7 +39,15 @@ export default class ViewerPane extends Vue {
             console.log(path);
             ipcRenderer.send('load_json', path);
             ipcRenderer.on('load_json_complete', (loadJsonEvent, jsonObj) => {
-                console.log(jsonObj);
+                // console.log(jsonObj);
+                const userDefStrList = jsonObj.userDefinitions;
+                const userDefObjList: UserDefinition[] =
+                    userDefStrList.map( (defStr: string) => JSON.parse(defStr) as UserDefinition);
+
+                this.$store.dispatch('setLdDataSource', jsonObj);
+                this.$store.dispatch('setLdDataUserDefList', userDefObjList);
+                // console.log(userDefObjList);
+
             });
         });
     }
