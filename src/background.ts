@@ -9,6 +9,13 @@ import * as unzipper from 'unzipper';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+// import * as hljs from 'highlight.js';
+//
+// hljs.registerLanguage('sql', require('highlight.js/lib/languages/sql'));
+// hljs.registerLanguage('javascript', require('highlight.js/lib/languages/javascript'));
+// hljs.registerLanguage('json', require('highlight.js/lib/languages/json'));
+// hljs.registerLanguage('java', require('highlight.js/lib/languages/java'));
+
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -159,7 +166,18 @@ ipcMain.on('load_json', (event, filePath) => {
     fs.readFile(filePath, 'utf-8', (err, data) => {
         const jsonStr = data;
         const jsonObj = JSON.parse(data);
-        console.log(jsonObj);
+        // console.log(jsonObj);
         event.sender.send('load_json_complete', jsonObj);
     });
 });
+
+// ipcMain.on('do_syntax_highlight', (event, codeType, codeBody) => {
+//     switch (codeType) {
+//         case 'rest':
+//         case 'others':
+//             codeType = 'json';
+//             break;
+//     }
+//     const highlightedCode = hljs.highlight(codeType, codeBody).value;
+//     event.sender.send('do_syntax_highlight_complete', highlightedCode);
+// });

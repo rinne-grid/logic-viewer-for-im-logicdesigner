@@ -10,6 +10,10 @@ export default new Vuex.Store({
     ldDataSource: null,
     ldDataUserDefList: {},
     ldDataUserDefObjDivideType: {},
+    ldDataLoaded: false,
+    // code
+    selectedSourceMap: {},
+    currentSourceName: '',
   },
   mutations: {
     setLdDataSource(state, ldData) {
@@ -29,6 +33,9 @@ export default new Vuex.Store({
           case 'sql':
             userDefObjDivType.sql.push(ldData);
             break;
+          case 'template':
+            userDefObjDivType.template.push(ldData);
+            break;
           case 'rest':
             userDefObjDivType.rest.push(ldData);
             break;
@@ -37,7 +44,19 @@ export default new Vuex.Store({
         }
       });
       state.ldDataUserDefObjDivideType = userDefObjDivType;
-
+    },
+    setLdDataLoaded(state, loaded: boolean) {
+      state.ldDataLoaded = loaded;
+    },
+    addSelectedSourceMap(state, sourceMap: any) {
+      const currentSourceMap: any = state.selectedSourceMap;
+      const sourceMapKey: string = Object.keys(sourceMap)[0];
+      // この形式で保管する { source_code_id: {source_code_object}, }
+      currentSourceMap[sourceMapKey] = sourceMap[sourceMapKey];
+      state.selectedSourceMap = currentSourceMap;
+    },
+    setCurrentSourceName(state, currentSourceName: string) {
+      state.currentSourceName = currentSourceName;
     },
   },
   actions: {
@@ -46,6 +65,15 @@ export default new Vuex.Store({
     },
     setLdDataUserDefList({ commit }, ldDataUserDefList: UserDefinition[]) {
       commit('setLdDataUserDefList', ldDataUserDefList);
+    },
+    setLdDataLoaded({ commit }, loaded: boolean) {
+      commit('setLdDataLoaded', loaded);
+    },
+    addSelectedSourceMap({ commit }, sourceMap: {}) {
+      commit('addSelectedSourceMap', sourceMap);
+    },
+    setCurrentSourceName({ commit }, currentSourceName: string) {
+      commit('setCurrentSourceName', currentSourceName);
     },
   },
   getters: {
@@ -57,6 +85,18 @@ export default new Vuex.Store({
     },
     getLdDataUserDefObjDivideType(state) {
       return state.ldDataUserDefObjDivideType;
+    },
+    getLdDataLoaded(state) {
+      return state.ldDataLoaded;
+    },
+    getSourceMapByDefId(state) {
+      return (defId: number) => {
+        const currentSourceMap: any = state.selectedSourceMap;
+        return currentSourceMap[defId];
+      };
+    },
+    getCurrentSourceName(state) {
+      return state.currentSourceName;
     },
   },
 });

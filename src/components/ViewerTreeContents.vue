@@ -1,5 +1,5 @@
 
-<template v-for="targetData in this.treeDivideList">
+<template v-for="targetData in this.getTreeDivideList">
     <span class="nav-group-item">
         <span class="icon icon-pencil"></span>
         {{targetData.definitionName}}
@@ -13,7 +13,11 @@ import { Vue, Prop, Component } from 'vue-property-decorator';
 @Component
 export default class ViewerTreeContents extends Vue {
     @Prop()
-    private treeDivideList!: [];
+    public treeDivideList!: [];
+
+    get getTreeDivideList(): [] {
+        return this.treeDivideList;
+    }
 }
 </script>
 

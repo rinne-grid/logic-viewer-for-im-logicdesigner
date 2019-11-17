@@ -3,7 +3,16 @@ export default interface UserDefinition {
     definitionData: {
         elementId: string;
         elementProperties: {
+            // JavaScript定義
             script: string;
+            // SQL定義
+            connectId: string;
+            databaseType: string;
+            limitation: boolean;
+            query: string;
+            queryType: string;
+            // Template
+            defaultTemplate: string;
         }
         iconId: string;
         inputDataDefinition: {
