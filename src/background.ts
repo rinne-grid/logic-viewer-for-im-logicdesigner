@@ -22,27 +22,36 @@ protocol.registerSchemesAsPrivileged([{scheme: 'app', privileges: { secure: true
 
 function createWindow() {
   // Create the browser window.
-  win = new BrowserWindow({ width: 800, height: 600, webPreferences: {
-    nodeIntegration: true,
-  } });
-
+  win = new BrowserWindow({
+    width: 1366,
+    height: 768,
+    webPreferences: {
+        nodeIntegration: true,
+    },
+  });
+  // win.maximize();
 
   const template = [
     {
-      label: 'File',
+      label: 'Help',
       submenu: [
         {
-          label: 'Open',
-          accelerator: 'CmdOrCtrl+O',
+          label: 'About',
           click: () => {
-            dialog.showOpenDialog({properties: ['openFile']}, (filePath: string) => {
-              win!.webContents.send('open_file', filePath);
-            });
+              if (win instanceof BrowserWindow) {
+                  dialog.showMessageBox(win, {
+                      type: 'info',
+                      message: 'LogicViewer for IM-LogicDesigner(v0.1)\nthis app is BSD License.',
+                  });
+              }
           },
         },
+         { role: 'toggledevtools' },
       ],
     },
   ];
+
+  // @ts-ignore
   const menu = Menu.buildFromTemplate(template);
   Menu.setApplicationMenu(menu);
 
@@ -123,12 +132,6 @@ if (isDevelopment) {
   }
 }
 
-// 20191003追加
-ipcMain.on('ondragstart', (event, msg) => {
-    console.log(msg);
-});
-
-
 ipcMain.on('load_and_unzip', (event, filePath) => {
     if (!fs.existsSync('./tmp')) {
         fs.mkdirSync('./tmp');
@@ -138,7 +141,7 @@ ipcMain.on('load_and_unzip', (event, filePath) => {
         .pipe(unzipper.Parse())
         .on('entry', (entry) => {
             const fileName = entry.path;
-            console.log(fileName);
+            // console.log(fileName);
             if ( fileName === 'user_definition.json') {
                 entry.pipe(fs.createWriteStream(`./tmp/${fileName}`));
                 console.log(entry.path);

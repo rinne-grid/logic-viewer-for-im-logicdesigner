@@ -1,18 +1,17 @@
 <template>
     <div id="area">
         <div class="pane-group">
-                <div class="pane pane-one-third sidebar">
-
+            <header class="toolbar toolbar-header">
+                <div class="toolbar-actions">
+                <div class="btn-group">
+                    <button class="btn btn-default" @click="handleOpenLdZipFile">
+                        <span class="icon icon-folder"></span>
+                    </button>
+                </div>
+                </div>
+            </header>
+            <div class="pane pane-one-fourth sidebar">
                 <nav class="nav-group">
-                    <header class="toolbar toolbar-header">
-                        <div class="toolbar-actions">
-                        <div class="btn-group">
-                            <button class="btn btn-default" @click="handleOpenLdZipFile">
-                                <span class="icon icon-folder"></span>
-                            </button>
-                        </div>
-                        </div>
-                    </header>
 <!--
   FIXME: ViewerTreeContents子コンポーネントを利用するように変更したい。
      Watch時点でプロパティを更新しているが、その変更が子コンポーネントに行き渡らない？理由はまだ不明
@@ -100,8 +99,26 @@
             </div>
 
             <ViewerPane ref="viewer_pane"></ViewerPane>
+<!-- TODO: 入力・出力パラメータの表示に対応する -->
+<!--            <div class="pane pane-one-fifth">-->
+<!--                <table class="table-striped">-->
+<!--                    <thead>-->
+<!--                        <tr>-->
+<!--                            <th>入力パラメータ名</th>-->
+<!--                            <th>入力パラメータ型</th>-->
+<!--                        </tr>-->
+<!--                    </thead>-->
+<!--                </table>-->
+<!--                <table class="table-striped">-->
+<!--                    <thead>-->
+<!--                        <tr>-->
+<!--                            <th>出力パラメータ名</th>-->
+<!--                            <th>出力パラメータ型</th>-->
+<!--                        </tr>-->
+<!--                    </thead>-->
+<!--                </table>-->
+<!--            </div>-->
         </div>
-
     </div>
 </template>
 
@@ -119,14 +136,17 @@ import UserDefinition from '@/interfaces/UserDefinition';
     },
 })
 export default class ViewContext extends Vue {
-    $refs!: {
+    public $refs!: {
         viewer_pane: ViewerPane,
     };
     private treeDivideType: UserDefinitionDivideType;
 
+    private currentUserDefinition: any;
+
     constructor() {
         super();
         this.treeDivideType = new UserDefinitionDivideType();
+        this.currentUserDefinition = {};
     }
     get storeLdDataUserDefObjDivideType(): UserDefinitionDivideType {
         return this.$store.getters.getLdDataUserDefObjDivideType;
@@ -134,6 +154,15 @@ export default class ViewContext extends Vue {
 
     get storeCurrentSourceName(): string {
         return this.$store.getters.getCurrentSourceName;
+    }
+
+    @Watch('storeCurrentSourceName')
+    private storeCurrentSourceNameChanged(newName: string, oldName: string) {
+        // 現在表示しているソースコードが変わったら、入出力パラメータへの反映を行う
+        // TODO: これはViewerPaneにも同じような処理があるので、統合すべき
+        this.currentUserDefinition = this.$store.getters.getSourceMapByDefId(newName) as UserDefinition;
+        console.log('ViewerContext - this.currentUserDefinition', newName, 'のソースオブジェクトを取得');
+
     }
 
     @Watch('storeLdDataUserDefObjDivideType')

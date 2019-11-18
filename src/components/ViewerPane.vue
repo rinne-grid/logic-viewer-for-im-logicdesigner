@@ -2,37 +2,39 @@
     <div class="pane">
         <input id="open_file_button" type="file" @change="openLdDataSelected">
         <template v-if="!this.isLdDataLoaded">
-            <div class="text-center">
+            <div class="text-center" id="app-top">
                 <div id="viewer_area">
                     <span class="icon icon-archive"></span>
                 </div>
-                <p>IM-LogicDesignerデータを読み込みましょう！</p>
+                <p>LogicViewer for IM-LogicDesignerへようこそ。<br>IM-LogicDesignerのデータを確認しましょう！</p>
                 <button class="btn btn-large btn-positive" @click="openLdDataButtonClick" >im_logicdesigner-data.zipを開く</button>
             </div>
         </template>
         <template v-if="this.isLdDataLoaded">
-            <ViewerToolbar :source-code="this.currentUserSourceCodeRaw"></ViewerToolbar>
-            <div class="tab-group">
-                <template v-for="targetKey in Object.keys(storeSelectedSourceMap)">
-                    <template v-if="currentUserDefinition && storeSelectedSourceMap[targetKey].definitionId === currentUserDefinition.definitionId">
-                         <div class="tab-item active" @click="openSourceTab(targetKey)">
-                            {{ storeSelectedSourceMap[targetKey].definitionName }}
-                            <span class="icon icon-cancel icon-close-tab" @click="closeSourceTab(targetKey)"></span>
-                        </div>
-                    </template>
-                    <template v-else>
-                         <div class="tab-item" @click="openSourceTab(targetKey)">
-                            {{ storeSelectedSourceMap[targetKey].definitionName }}
-                            <span class="icon icon-cancel icon-close-tab" @click="closeSourceTab(targetKey)"></span>
-                        </div>
-                    </template>
+            <ViewerToolbar :user-definition="this.currentUserDefinition" :source-code="this.currentUserSourceCodeRaw"></ViewerToolbar>
 
-                </template>
-            </div>
+                <div class="tab-group">
+                    <template v-for="targetKey in Object.keys(storeSelectedSourceMap)">
+                        <template v-if="currentUserDefinition && storeSelectedSourceMap[targetKey].definitionId === currentUserDefinition.definitionId">
+                             <div class="tab-item active" @click="openSourceTab(targetKey)">
+                                {{ storeSelectedSourceMap[targetKey].definitionName }}
+                                <span class="icon icon-cancel icon-close-tab" @click="closeSourceTab(targetKey)"></span>
+                            </div>
+                        </template>
+                        <template v-else>
+                             <div class="tab-item" @click="openSourceTab(targetKey)">
+                                {{ storeSelectedSourceMap[targetKey].definitionName }}
+                                <span class="icon icon-cancel icon-close-tab" @click="closeSourceTab(targetKey)"></span>
+                            </div>
+                        </template>
+
+                    </template>
+                </div>
             <template v-if="currentUserSourceCode">
-                <pre id="code_body"><code v-html="this.currentUserSourceCode"></code></pre>
+                <pre class="rngd-pane" id="code_body"><code v-html="this.currentUserSourceCode"></code></pre>
             </template>
         </template>
+
 <!--                    <div class="pane">-->
 <!--                <table class="table-striped">-->
 <!--                    <thead>-->
@@ -43,6 +45,7 @@
 <!--                    </thead>-->
 <!--                </table>-->
 <!--            </div>-->
+
     </div>
 </template>
 
@@ -59,11 +62,11 @@ hljs.registerLanguage('java', require('highlight.js/lib/languages/java'));
 hljs.registerLanguage('python', require('highlight.js/lib/languages/python'));
 
 import UserDefinition from '@/interfaces/UserDefinition';
-import ViewerToolbar from "@/components/ViewerToolbar.vue";
+import ViewerToolbar from '@/components/ViewerToolbar.vue';
 @Component({
     components: {
         ViewerToolbar,
-    }
+    },
 })
 export default class ViewerPane extends Vue {
     private VIEWER_STYLE: object = {
@@ -82,6 +85,10 @@ export default class ViewerPane extends Vue {
         this.currentUserSourceCodeRaw = '';
 
     }
+    public openLdDataButtonClick(): void {
+        const openFileButton: any = document.getElementById('open_file_button');
+        openFileButton.click();
+    }
 
     get isLdDataLoaded(): boolean {
         return this.$store.getters.getLdDataLoaded;
@@ -93,11 +100,6 @@ export default class ViewerPane extends Vue {
 
     get storeSelectedSourceMap() {
         return this.$store.getters.getSelectedSourceMap;
-    }
-
-    @Emit('handle-open-ld-zip-file')
-    public handleOpenLdZipFile():void {
-        console.log('emit!');
     }
 
     @Watch('storeCurrentSourceName')
@@ -136,31 +138,26 @@ export default class ViewerPane extends Vue {
         console.log('isCurrentSourceNameChanged---end');
     }
 
-    public openLdDataButtonClick(): void {
-        const openFileButton: any = document.getElementById('open_file_button');
-        openFileButton.click();
-    }
-
     private openLdDataSelected(e: any) {
         const targetFiles = e.target.files;
-        const targetFile = targetFiles[0];
-        ipcRenderer.send('load_and_unzip', targetFile.path);
-        ipcRenderer.once('load_and_unzip_complete', (event, path) => {
-            console.log(path);
-            ipcRenderer.send('load_json', path);
-            ipcRenderer.once('load_json_complete', (loadJsonEvent, jsonObj) => {
-                // console.log(jsonObj);
-                const userDefStrList = jsonObj.userDefinitions;
-                const userDefObjList: UserDefinition[] =
-                    userDefStrList.map( (defStr: string) => JSON.parse(defStr) as UserDefinition);
+        if (targetFiles) {
+            const targetFile = targetFiles[0];
+            ipcRenderer.send('load_and_unzip', targetFile.path);
+            ipcRenderer.once('load_and_unzip_complete', (event, path) => {
+                ipcRenderer.send('load_json', path);
+                ipcRenderer.once('load_json_complete', (loadJsonEvent, jsonObj) => {
+                    // console.log(jsonObj);
+                    const userDefStrList = jsonObj.userDefinitions;
+                    const userDefObjList: UserDefinition[] =
+                        userDefStrList.map((defStr: string) => JSON.parse(defStr) as UserDefinition);
 
-                this.$store.dispatch('setLdDataSource', jsonObj);
-                this.$store.dispatch('setLdDataUserDefList', userDefObjList);
-                // console.log(userDefObjList);
-                this.$store.dispatch('setLdDataLoaded', true);
-                console.log("setLdDataLoaded--end");
+                    this.$store.dispatch('setLdDataSource', jsonObj);
+                    this.$store.dispatch('setLdDataUserDefList', userDefObjList);
+                    // console.log(userDefObjList);
+                    this.$store.dispatch('setLdDataLoaded', true);
+                });
             });
-        });
+        }
     }
 
     private openSourceTab(sourceId: string) {
@@ -194,9 +191,9 @@ export default class ViewerPane extends Vue {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 #viewer_area {
-    font-size: 120px;
+    font-size: 150px;
     color: #bbb;
 }
 
@@ -208,4 +205,27 @@ export default class ViewerPane extends Vue {
     padding: 12px;
 }
 
+.pane {
+    overflow-y: visible;
+}
+
+.rngd-pane {
+    overflow-y: scroll;
+    height: 94%;
+    margin-top: 0px;
+}
+
+#app-top {
+    position: absolute;
+    top: 20%;
+    left: 20%;
+    height: 100%;
+    p {
+        font-size: 1.6rem;
+    };
+
+    button {
+        font-size: 1.0rem;
+    }
+}
 </style>
