@@ -1,8 +1,18 @@
 <template>
     <div id="area">
         <div class="pane-group">
-            <div class="pane pane-one-third sidebar">
+                <div class="pane pane-one-third sidebar">
+
                 <nav class="nav-group">
+                    <header class="toolbar toolbar-header">
+                        <div class="toolbar-actions">
+                        <div class="btn-group">
+                            <button class="btn btn-default" @click="handleOpenLdZipFile">
+                                <span class="icon icon-folder"></span>
+                            </button>
+                        </div>
+                        </div>
+                    </header>
 <!--
   FIXME: ViewerTreeContents子コンポーネントを利用するように変更したい。
      Watch時点でプロパティを更新しているが、その変更が子コンポーネントに行き渡らない？理由はまだ不明
@@ -89,14 +99,14 @@
                 </nav>
             </div>
 
-            <ViewerPane></ViewerPane>
+            <ViewerPane ref="viewer_pane"></ViewerPane>
         </div>
 
     </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue, Watch } from 'vue-property-decorator';
+import { Component, Vue, Watch, Emit } from 'vue-property-decorator';
 import ViewerPane from '@/components/ViewerPane.vue';
 import ViewerTreeContents from '@/components/ViewerTreeContents.vue';
 import UserDefinitionDivideType from '@/classes/UserDefinitionDivideType';
@@ -109,6 +119,9 @@ import UserDefinition from '@/interfaces/UserDefinition';
     },
 })
 export default class ViewContext extends Vue {
+    $refs!: {
+        viewer_pane: ViewerPane,
+    };
     private treeDivideType: UserDefinitionDivideType;
 
     constructor() {
@@ -127,6 +140,13 @@ export default class ViewContext extends Vue {
     private storeUserDefObjDivType(newObj: any, oldObj: any) {
         console.log('watch:', newObj);
         this.treeDivideType = newObj as UserDefinitionDivideType;
+    }
+
+    private handleOpenLdZipFile(): void {
+        console.log('handleOpenLdZipFile');
+        this.$emit('handle-open-ld-zip-file');
+        this.$refs.viewer_pane.openLdDataButtonClick();
+        // this.$ref .viewerPane.openLdDataButtonClick();
     }
 
     private setSelectedSource(targetObj: UserDefinition) {
