@@ -1,0 +1,2 @@
+.\node_modules\.bin\license-checker --production --relativeLicensePath --json --customPath .\customFormat.json --out ./open-source-software.json
+.\node_modules\.bin\license-checker --production --relativeLicensePath --csv --customPath .\customFormat.json --out ./open-source-software.csv

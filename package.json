@@ -1,6 +1,8 @@
 {
   "name": "logic-viewer-for-im-logicdesigner",
   "version": "0.1.0",
+  "license": "MIT",
+  "repository": "https://github.com/rinne-grid/rngd-im-logic-designer-viewer",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -17,6 +19,7 @@
     "@types/unzip": "^0.1.1",
     "@types/unzipper": "^0.10.1",
     "highlight.js": "^9.16.2",
+    "license-checker": "^25.0.1",
     "photon": "github:connors/photon",
     "unzipper": "^0.10.5",
     "vue": "^2.6.10",

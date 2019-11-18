@@ -16,7 +16,8 @@ const isDevelopment = process.env.NODE_ENV !== 'production';
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let win: BrowserWindow | null;
-
+let licenseWin: BrowserWindow | null;
+const isMac = process.platform === 'darwin';
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([{scheme: 'app', privileges: { secure: true, standard: true } }]);
 
@@ -31,18 +32,52 @@ function createWindow() {
   });
   // win.maximize();
 
+
+  if (process.env.WEBPACK_DEV_SERVER_URL) {
+    // Load the url of the dev server if in development mode
+    win.loadURL(process.env.WEBPACK_DEV_SERVER_URL as string);
+    console.log(process.env.WEBPACK_DEV_SERVER_URL);
+
+    if (!process.env.IS_TEST) {
+        win.webContents.openDevTools();
+        BrowserWindow.addDevToolsExtension(
+            path.join(os.homedir(), 'AppData/Local/Google/Chrome/User Data/Default/Extensions/nhdogjmejiglipccpnnnanhbledajbpd/5.3.2_0'),
+        );
+    }
+  } else {
+    createProtocol('app');
+    // Load the index.html when not in development
+    win.loadURL('app://./index.html');
+  }
+
   const template = [
+    {
+      label: 'File',
+      submenu: [
+        isMac ? { role: 'close' } : { role: 'quit' },
+      ],
+    },
     {
       label: 'Help',
       submenu: [
         {
           label: 'About',
           click: () => {
-              if (win instanceof BrowserWindow) {
-                  dialog.showMessageBox(win, {
-                      type: 'info',
-                      message: 'LogicViewer for IM-LogicDesigner(v0.1)\nthis app is BSD License.',
-                  });
+              licenseWin = new BrowserWindow({
+                modal: true,
+                frame: false,
+                show: false,
+                webPreferences: {
+                    nodeIntegration: true,
+                },
+              });
+              if (process.env.WEBPACK_DEV_SERVER_URL) {
+                  licenseWin.loadURL(`${process.env.WEBPACK_DEV_SERVER_URL as string}/license.html`);
+              } else {
+                  licenseWin.loadURL(`app://./license.html`);
+              }
+              if (licenseWin instanceof BrowserWindow) {
+                  licenseWin.show();
               }
           },
         },
@@ -54,25 +89,6 @@ function createWindow() {
   // @ts-ignore
   const menu = Menu.buildFromTemplate(template);
   Menu.setApplicationMenu(menu);
-
-  if (process.env.WEBPACK_DEV_SERVER_URL) {
-    // Load the url of the dev server if in development mode
-    win.loadURL(process.env.WEBPACK_DEV_SERVER_URL as string);
-    console.log(process.env.WEBPACK_DEV_SERVER_URL);
-
-    if (!process.env.IS_TEST) {
-        win.webContents.openDevTools();
-
-
-        BrowserWindow.addDevToolsExtension(
-            path.join(os.homedir(), 'AppData/Local/Google/Chrome/User Data/Default/Extensions/nhdogjmejiglipccpnnnanhbledajbpd/5.3.2_0'),
-        );
-    }
-  } else {
-    createProtocol('app');
-    // Load the index.html when not in development
-    win.loadURL('app://./index.html');
-  }
 
   win.on('closed', () => {
     win = null;
