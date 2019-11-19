@@ -12,40 +12,29 @@
         </template>
         <template v-if="this.isLdDataLoaded">
             <ViewerToolbar :user-definition="this.currentUserDefinition" :source-code="this.currentUserSourceCodeRaw"></ViewerToolbar>
+                <div class="pane">
+                    <div class="tab-group">
+                        <template v-for="targetKey in Object.keys(storeSelectedSourceMap)">
+                            <template v-if="currentUserDefinition && storeSelectedSourceMap[targetKey].definitionId === currentUserDefinition.definitionId">
+                                 <div class="tab-item active" @click="openSourceTab(targetKey)">
+                                    {{ storeSelectedSourceMap[targetKey].definitionName }}
+                                    <span class="icon icon-cancel icon-close-tab" @click="closeSourceTab(targetKey)"></span>
+                                </div>
+                            </template>
+                            <template v-else>
+                                 <div class="tab-item" @click="openSourceTab(targetKey)">
+                                    {{ storeSelectedSourceMap[targetKey].definitionName }}
+                                    <span class="icon icon-cancel icon-close-tab" @click="closeSourceTab(targetKey)"></span>
+                                </div>
+                            </template>
 
-                <div class="tab-group">
-                    <template v-for="targetKey in Object.keys(storeSelectedSourceMap)">
-                        <template v-if="currentUserDefinition && storeSelectedSourceMap[targetKey].definitionId === currentUserDefinition.definitionId">
-                             <div class="tab-item active" @click="openSourceTab(targetKey)">
-                                {{ storeSelectedSourceMap[targetKey].definitionName }}
-                                <span class="icon icon-cancel icon-close-tab" @click="closeSourceTab(targetKey)"></span>
-                            </div>
                         </template>
-                        <template v-else>
-                             <div class="tab-item" @click="openSourceTab(targetKey)">
-                                {{ storeSelectedSourceMap[targetKey].definitionName }}
-                                <span class="icon icon-cancel icon-close-tab" @click="closeSourceTab(targetKey)"></span>
-                            </div>
-                        </template>
-
-                    </template>
+                    </div>
                 </div>
             <template v-if="currentUserSourceCode">
                 <pre class="rngd-pane" id="code_body"><code v-html="this.currentUserSourceCode"></code></pre>
             </template>
         </template>
-
-<!--                    <div class="pane">-->
-<!--                <table class="table-striped">-->
-<!--                    <thead>-->
-<!--                        <tr>-->
-<!--                            <th>入力パラメータ名</th>-->
-<!--                            <th>入力パラメータ型</th>-->
-<!--                        </tr>-->
-<!--                    </thead>-->
-<!--                </table>-->
-<!--            </div>-->
-
     </div>
 </template>
 
@@ -60,6 +49,8 @@ hljs.registerLanguage('javascript', require('highlight.js/lib/languages/javascri
 hljs.registerLanguage('json', require('highlight.js/lib/languages/json'));
 hljs.registerLanguage('java', require('highlight.js/lib/languages/java'));
 hljs.registerLanguage('python', require('highlight.js/lib/languages/python'));
+
+const jsonBeautify = require('json-beautify');
 
 import UserDefinition from '@/interfaces/UserDefinition';
 import ViewerToolbar from '@/components/ViewerToolbar.vue';
@@ -114,7 +105,9 @@ export default class ViewerPane extends Vue {
             switch (codeType) {
                 case 'rest':
                     codeType = 'json';
-                    currentUserSourceCode = JSON.stringify(this.currentUserDefinition.definitionData.elementProperties);
+                    currentUserSourceCode = jsonBeautify(
+                        this.currentUserDefinition.definitionData.elementProperties,
+                        null, 2, 80);
                     break;
                 case 'template':
                     codeType = 'python';
@@ -122,7 +115,9 @@ export default class ViewerPane extends Vue {
                     break;
                 case 'others':
                     codeType = 'json';
-                    currentUserSourceCode = JSON.stringify(this.currentUserDefinition.definitionData.elementProperties);
+                    currentUserSourceCode = jsonBeautify(
+                        this.currentUserDefinition.definitionData.elementProperties,
+                        null, 2, 80);
                     break;
                 case 'javascript':
                     currentUserSourceCode = this.currentUserDefinition.definitionData.elementProperties.script;

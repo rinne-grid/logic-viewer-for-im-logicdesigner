@@ -97,26 +97,23 @@
                     </template>
                 </nav>
             </div>
-
             <ViewerPane ref="viewer_pane"></ViewerPane>
-<!-- TODO: 入力・出力パラメータの表示に対応する -->
-<!--            <div class="pane pane-one-fifth">-->
-<!--                <table class="table-striped">-->
-<!--                    <thead>-->
-<!--                        <tr>-->
-<!--                            <th>入力パラメータ名</th>-->
-<!--                            <th>入力パラメータ型</th>-->
-<!--                        </tr>-->
-<!--                    </thead>-->
-<!--                </table>-->
-<!--                <table class="table-striped">-->
-<!--                    <thead>-->
-<!--                        <tr>-->
-<!--                            <th>出力パラメータ名</th>-->
-<!--                            <th>出力パラメータ型</th>-->
-<!--                        </tr>-->
-<!--                    </thead>-->
-<!--                </table>-->
+<!-- TODO: 入力・出力パラメータの表示に対応する-->
+<!--            <div class="pane pane-one-six">-->
+<!--                <div class="window" style="height:100%">-->
+<!--                    <header class="toolbar toolbar-header">-->
+<!--                      <h1 class="title">入力パラメータ</h1>-->
+<!--                    </header>-->
+<!--                    <div class="window-content">-->
+<!--                        <v-treeview :items="this.currentUserDefinition.definitionData.inputDataDefinition"></v-treeview>-->
+<!--                    </div>-->
+<!--                    <header class="toolbar toolbar-header">-->
+<!--                      <h1 class="title">出力パラメータ</h1>-->
+<!--                    </header>-->
+<!--                    <div class="window-content">-->
+<!--                        <h2>ここにjson</h2>-->
+<!--                    </div>-->
+<!--                </div>-->
 <!--            </div>-->
         </div>
     </div>

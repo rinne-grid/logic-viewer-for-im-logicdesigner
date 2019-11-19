@@ -19,6 +19,7 @@
     "@types/unzip": "^0.1.1",
     "@types/unzipper": "^0.10.1",
     "highlight.js": "^9.16.2",
+    "json-beautify": "^1.1.1",
     "license-checker": "^25.0.1",
     "photon": "github:connors/photon",
     "unzipper": "^0.10.5",
@@ -26,6 +27,7 @@
     "vue-class-component": "^7.0.2",
     "vue-property-decorator": "^8.1.0",
     "vue-router": "^3.0.3",
+    "vuetify": "^2.1.10",
     "vuex": "^3.0.1"
   },
   "devDependencies": {
