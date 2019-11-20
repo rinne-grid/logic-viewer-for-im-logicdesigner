@@ -2,7 +2,7 @@
 
 ## 概要
 
-[IM-LogicDesigner](https://www.intra-mart.jp/document/library/iap/public/im_logic/im_logic_user_guide/texts/summary/index.html)のエクスポートデータ(im_logicdesigner-data.zip)から  
+intra-martの[IM-LogicDesigner](https://www.intra-mart.jp/document/library/iap/public/im_logic/im_logic_user_guide/texts/summary/index.html)のエクスポートデータ(im_logicdesigner-data.zip)から  
 JavaScriptやSQL、FreeMakerテンプレートといったユーザ定義情報を読み込み  
 ツリービューでソースコードの確認ができるビューアです。 
 
