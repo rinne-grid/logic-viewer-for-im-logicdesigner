@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import UserDefinition from '@/interfaces/UserDefinition';
 import UserDefinitionDivideType from '@/classes/UserDefinitionDivideType';
+import RngdUtil from '@/classes/RngdUtil';
 
 Vue.use(Vuex);
 
@@ -146,6 +147,11 @@ export default new Vuex.Store({
                 break;
         }
         return currentSourceCodeRaw;
+      };
+    },
+    getSourcePrimaryKeyByObj(state) {
+      return (targetObj: UserDefinition) => {
+        return RngdUtil.getSourcePrimaryKey(targetObj);
       };
     },
   },
