@@ -21,77 +21,77 @@
 <!--                        </template>-->
                     <h5 class="nav-group-title">JavaScript</h5>
                     <template v-for="targetData in this.treeDivideType.js">
-                        <template v-if="targetData.definitionId === storeCurrentSourceName">
+                        <template v-if="getStoreSourcePrimaryKey(targetData) === storeCurrentSourceName">
                             <a class="nav-group-item active" @click="setSelectedSource(targetData)" >
                                 <span class="icon icon-pencil"></span>
-                                {{targetData.definitionName}}
+                                (v{{targetData.version}}) {{targetData.definitionName}}
                             </a>
                         </template>
                         <template v-else>
                             <a class="nav-group-item" @click="setSelectedSource(targetData)" >
                                 <span class="icon icon-pencil"></span>
-                                {{targetData.definitionName}}
+                                (v{{targetData.version}}) {{targetData.definitionName}}
                             </a>
                         </template>
                     </template>
 
                     <h5 class="nav-group-title">SQL</h5>
                     <template v-for="targetData in this.treeDivideType.sql">
-                        <template v-if="targetData.definitionId === storeCurrentSourceName">
+                        <template v-if="getStoreSourcePrimaryKey(targetData) === storeCurrentSourceName">
                             <a class="nav-group-item active" @click="setSelectedSource(targetData)" >
                                 <span class="icon icon-pencil"></span>
-                                {{targetData.definitionName}}
+                                (v{{targetData.version}}) {{targetData.definitionName}}
                             </a>
                         </template>
                         <template v-else>
                             <a class="nav-group-item" @click="setSelectedSource(targetData)" >
                                 <span class="icon icon-pencil"></span>
-                                {{targetData.definitionName}}
+                                (v{{targetData.version}}) {{targetData.definitionName}}
                             </a>
                         </template>
                     </template>
                     <h5 class="nav-group-title">テンプレート</h5>
                     <template v-for="targetData in this.treeDivideType.template">
-                        <template v-if="targetData.definitionId === storeCurrentSourceName">
+                        <template v-if="getStoreSourcePrimaryKey(targetData) === storeCurrentSourceName">
                             <a class="nav-group-item active" @click="setSelectedSource(targetData)" >
                                 <span class="icon icon-pencil"></span>
-                                {{targetData.definitionName}}
+                                (v{{targetData.version}}) {{targetData.definitionName}}
                             </a>
                         </template>
                         <template v-else>
                             <a class="nav-group-item" @click="setSelectedSource(targetData)" >
                                 <span class="icon icon-pencil"></span>
-                                {{targetData.definitionName}}
+                                (v{{targetData.version}}) {{targetData.definitionName}}
                             </a>
                         </template>
                     </template>
                     <h5 class="nav-group-title">REST</h5>
                     <template v-for="targetData in this.treeDivideType.rest">
-                        <template v-if="targetData.definitionId === storeCurrentSourceName">
+                        <template v-if="getStoreSourcePrimaryKey(targetData) === storeCurrentSourceName">
                             <a class="nav-group-item active" @click="setSelectedSource(targetData)" >
                                 <span class="icon icon-pencil"></span>
-                                {{targetData.definitionName}}
+                                (v{{targetData.version}}) {{targetData.definitionName}}
                             </a>
                         </template>
                         <template v-else>
                             <a class="nav-group-item" @click="setSelectedSource(targetData)" >
                                 <span class="icon icon-pencil"></span>
-                                {{targetData.definitionName}}
+                                (v{{targetData.version}}) {{targetData.definitionName}}
                             </a>
                         </template>
                     </template>
                     <h5 class="nav-group-title">その他</h5>
                     <template v-for="targetData in this.treeDivideType.others">
-                        <template v-if="targetData.definitionId === storeCurrentSourceName">
+                        <template v-if="getStoreSourcePrimaryKey(targetData) === storeCurrentSourceName">
                             <a class="nav-group-item active" @click="setSelectedSource(targetData)" >
                                 <span class="icon icon-pencil"></span>
-                                {{targetData.definitionName}}
+                                (v{{targetData.version}}) {{targetData.definitionName}}
                             </a>
                         </template>
                         <template v-else>
                             <a class="nav-group-item" @click="setSelectedSource(targetData)" >
                                 <span class="icon icon-pencil"></span>
-                                {{targetData.definitionName}}
+                                (v{{targetData.version}}) {{targetData.definitionName}}
                             </a>
                         </template>
                     </template>
@@ -153,6 +153,10 @@ export default class ViewContext extends Vue {
         return this.$store.getters.getCurrentSourceName;
     }
 
+    private getStoreSourcePrimaryKey(targetObj: UserDefinition) {
+        return this.$store.getters.getSourcePrimaryKeyByObj(targetObj);
+    }
+
     @Watch('storeCurrentSourceName')
     private storeCurrentSourceNameChanged(newName: string, oldName: string) {
         // 現在表示しているソースコードが変わったら、入出力パラメータへの反映を行う
@@ -176,9 +180,10 @@ export default class ViewContext extends Vue {
     }
 
     private setSelectedSource(targetObj: UserDefinition) {
-        this.$store.dispatch('setCurrentSourceName', targetObj.definitionId);
+        const sourcePrimaryKey = this.$store.getters.getSourcePrimaryKeyByObj(targetObj);
+        this.$store.dispatch('setCurrentSourceName', sourcePrimaryKey);
         const targetSourceMap: any = {};
-        targetSourceMap[targetObj.definitionId] = targetObj;
+        targetSourceMap[sourcePrimaryKey] = targetObj;
         this.$store.dispatch('addSelectedSourceMap', targetSourceMap);
     }
 }

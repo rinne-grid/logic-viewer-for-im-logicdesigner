@@ -15,15 +15,15 @@
                 <div class="pane">
                     <div class="tab-group">
                         <template v-for="targetKey in Object.keys(storeSelectedSourceMap)">
-                            <template v-if="currentUserDefinition && storeSelectedSourceMap[targetKey].definitionId === currentUserDefinition.definitionId">
+                            <template v-if="currentUserDefinition && getStoreSourcePrimaryKey(storeSelectedSourceMap[targetKey]) === getStoreSourcePrimaryKey(currentUserDefinition)">
                                  <div class="tab-item active" @click="openSourceTab(targetKey)">
-                                    {{ storeSelectedSourceMap[targetKey].definitionName }}
+                                    (v{{ storeSelectedSourceMap[targetKey].version }}) {{ storeSelectedSourceMap[targetKey].definitionName }}
                                     <span class="icon icon-cancel icon-close-tab" @click="closeSourceTab(targetKey)"></span>
                                 </div>
                             </template>
                             <template v-else>
                                  <div class="tab-item" @click="openSourceTab(targetKey)">
-                                    {{ storeSelectedSourceMap[targetKey].definitionName }}
+                                    (v{{ storeSelectedSourceMap[targetKey].version }}) {{ storeSelectedSourceMap[targetKey].definitionName }}
                                     <span class="icon icon-cancel icon-close-tab" @click="closeSourceTab(targetKey)"></span>
                                 </div>
                             </template>
@@ -91,6 +91,10 @@ export default class ViewerPane extends Vue {
 
     get storeSelectedSourceMap() {
         return this.$store.getters.getSelectedSourceMap;
+    }
+
+    private getStoreSourcePrimaryKey(targetObj: UserDefinition) {
+        return this.$store.getters.getSourcePrimaryKeyByObj(targetObj);
     }
 
     @Watch('storeCurrentSourceName')
@@ -174,7 +178,7 @@ export default class ViewerPane extends Vue {
             Object.keys(selectedSourceMap).forEach( (currentKey, index) => {
                 // 最後に追加したソースコードを表示する
                 if (index === lastSourceIndex) {
-                    fallbackSourceName = selectedSourceMap[currentKey].definitionId;
+                    fallbackSourceName = `${selectedSourceMap[currentKey].definitionId}${selectedSourceMap[currentKey].version}`;
                 }
             });
             console.log('fallbackソース名', fallbackSourceName);
