@@ -1,3 +1,4 @@
+import UserDefinition from '@/interfaces/UserDefinition';
 export default class RngdUtil {
     public static userDefinitionType2Extension(type: string): string {
         let extension = type;
@@ -16,5 +17,8 @@ export default class RngdUtil {
                 break;
          }
         return extension;
+    }
+    public static getSourcePrimaryKey(targetObj: UserDefinition): string {
+        return `${targetObj.definitionId}${targetObj.version}`;
     }
 }
