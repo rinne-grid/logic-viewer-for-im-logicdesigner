@@ -17,10 +17,6 @@ JavaScriptやSQL、FreeMakerテンプレートといったユーザ定義情報�
 
 [リリースページ](https://github.com/rinne-grid/logic-viewer-for-im-logicdesigner/releases)よりlogic-viewer-for-im-logicdesigner.Setup.x.x.x-win.exeを見つけてダウンロードします
 
-* 面倒な方は以下のリンクからダウンロードし、exeを起動してください。  
-[logic-viewer-for-im-logicdesigner.Setup.0.1.0-win.exe](https://github.com/rinne-grid/logic-viewer-for-im-logicdesigner/releases/download/v0.1.0/logic-viewer-for-im-logicdesigner.Setup.0.1.0-win.exe)
-
-
 ## アプリ操作方法
 
 1. アプリの左上のファイルアイコンをクリックします
